@@ -1,51 +1,44 @@
 from django.shortcuts import render
-import openai, os
+import os
 from dotenv import load_dotenv
 from groq import Groq
 
 load_dotenv()
 
-api_key = os.getenv("OPENAI_KEY")
-print(f"API Key Loaded: {api_key[:5]}...")  # Debugging print
+api_key = os.getenv("GROQ_API_KEY")  # Ensure using the correct key
 
 def chatbot(request):
-    print("Chatbot view called!")  # Debugging print
-    
+    print("Chatbot view called!")  
 
     if not api_key:
-        print("Error: API key not found!")  # Debugging print
+        print("Error: API key not found!")  
         return render(request, 'main.html')
+
+    chatbot_response = None  # Initialize to avoid UnboundLocalError
 
     if request.method == "POST":
         user_input = request.POST.get("user_input", "").strip()
-        print(f"Received User Input: {user_input}")  # Debugging print
+        print(f"Received User Input: {user_input}")  
 
         if not user_input:
             print("No user input received.")
             return render(request, 'main.html')
 
         try:
-            # client = openai.OpenAI(api_key=api_key)  # Pass API key to client
-            client = Groq(
-            api_key=os.environ.get("GROQ_API_KEY"),
-            )
+            client = Groq(api_key=api_key)
 
             response = client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
-                messages=[{"role": "user", "content": user_input}],
-
+                messages=[
+                    {"role": "system", "content": "You are a multilingual translator. Translate the user's text to Nigerian Pidgin accurately while preserving its meaning."},
+                    {"role": "user", "content": user_input}
+                ]
             )
-            # response = client.chat.completions.create(
-            #     model="gpt-3.5-turbo",
-            #     messages=[{"role": "user", "content": user_input}],
-            #     max_tokens=512,
-            #     temperature=0.5
-            # )
 
             chatbot_response = response.choices[0].message.content.strip()
-            print(f"Chatbot Response: {chatbot_response}")  # Debugging print
+            print(f"Chatbot Response: {chatbot_response}")  
 
         except Exception as e:
-            print(f"Error: {str(e)}")  # Debugging error print
+            print(f"Error: {str(e)}")  
 
     return render(request, 'main.html', {"response": chatbot_response})
