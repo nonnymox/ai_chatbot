@@ -10,6 +10,7 @@ print(f"API Key Loaded: {api_key[:5]}...")  # Debugging print
 
 def chatbot(request):
     print("Chatbot view called!")  # Debugging print
+    
 
     if not api_key:
         print("Error: API key not found!")  # Debugging print
