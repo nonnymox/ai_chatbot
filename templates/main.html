@@ -1,4 +1,9 @@
-{% extends 'base.html'%}
+{% extends 'base.html'%} {% block content %}
 
-{% block content %}
+<h3>Translate</h3>
+<form method="post">
+  {% csrf_token %}
+  <input type="text" class="form-control" name="user_input" />
+  <button type="submit" class="btn btn-primary mt-3">Submit</button>
+</form>
 {% endblock content %}
